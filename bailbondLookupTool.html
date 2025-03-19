@@ -209,7 +209,7 @@
         <form id="npnForm">
             <label for="npnInput">Enter NPN:</label>
             <input type="number" id="npnInput" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 123123123">
-            <input type="submit" onsubmit="fetchAgentInfo()">
+            <input type="submit" onsubmit="fetchAgentInfo()" style="display: none;">
         </form>
         <div class="buttons-container">
             <button id="getAgentInfoBtn" onclick="fetchAgentInfo()">Lookup by NPN</button>
@@ -265,7 +265,6 @@
         });
 
         async function fetchAgentInfo() {
-            npnInput.blur(); 
             const npn = npnInput.value.trim();
             if (!npn) {
                 alert('Please enter an NPN.');
@@ -367,6 +366,7 @@
 
 
         function displayAgentInfo(data) {
+            npnInput.blur(); 
             const licenseExpiration = new Date(data.licenseExpirationDate);
             const licenseEffective = new Date(data.licenseEffectiveDate);
             const today = new Date();
@@ -396,6 +396,7 @@
 
             const agentElement = document.querySelector('.agent');
             if (agentElement) {
+                window.scrollTo(0, window.scrollY - 1);
                 agentElement.scrollIntoView({
                     behavior: 'smooth', 
                     block: 'start'
