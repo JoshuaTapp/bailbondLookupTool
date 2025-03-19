@@ -391,6 +391,14 @@
                 <div class="info-item"><span class="info-label">Business Address:</span> ${data.businessAddress}</div>
             `;
             agentInfoDiv.style.display = 'block';
+
+            const agentElement = document.querySelector('.agent');
+            if (agentElement) {
+                agentElement.scrollIntoView({
+                    behavior: 'smooth', 
+                    block: 'start'
+                });
+            }
         }
     </script>
 </body>
