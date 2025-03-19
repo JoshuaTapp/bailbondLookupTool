@@ -280,7 +280,7 @@
             video.setAttribute('playsinline', ''); // iOS Safari
 
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment'} });
                 video.srcObject = stream;
                 qrVideo.appendChild(video);
                 await video.play();
