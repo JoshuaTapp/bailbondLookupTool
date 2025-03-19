@@ -33,7 +33,7 @@
             font-weight: bold;
         }
 
-        input[type="number"] {
+        #npnInput {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -206,8 +206,10 @@
             THIS IS A DEMO AND NOT MADE FOR PRODUCTION
         </h3>
 
-        <label for="npnInput">Enter NPN:</label>
-        <input type="number" id="npnInput" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 123123123">
+        <form id="npnForm">
+            <label for="npnInput">Enter NPN:</label>
+            <input type="number" id="npnInput" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 123123123">
+        </form>
         <div class="buttons-container">
             <button id="getAgentInfoBtn" onclick="fetchAgentInfo()">Lookup by NPN</button>
             <button id="scanQrCode" onclick="scanQrCode()">Scan QR Code</button>
@@ -247,6 +249,19 @@
         const npnInput = document.getElementById('npnInput');
         const agentStatusDiv = document.getElementById('agentStatus');
         const agentPhotoImg = document.getElementById('agentPhoto');
+        const npnForm = document.getElementById('npnForm');
+
+        npnForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            fetchAgentInfo();
+        });
+
+        npnInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                fetchAgentInfo();
+            }
+        });
 
         async function fetchAgentInfo() {
             const npn = npnInput.value.trim();
