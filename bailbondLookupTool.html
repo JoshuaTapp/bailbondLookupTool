@@ -204,7 +204,7 @@
         <h1>NC DOI Bail Bondsman License Lookup</h1>
 
         <label for="npnInput">Enter NPN:</label>
-        <input type="number" id="npnInput" placeholder="e.g. 123123123">
+        <input type="number" id="npnInput" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 123123123">
         <div class="buttons-container">
             <button id="getAgentInfoBtn" onclick="fetchAgentInfo()">Lookup by NPN</button>
             <button id="scanQrCode" onclick="scanQrCode()">Scan QR Code</button>
