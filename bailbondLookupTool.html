@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Information</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.877);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #getAgentInfoBtn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #getAgentInfoBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #scanQrCode {
+            background-color: #4e28a7;
+            color: white;
+            border: 2px solid #4e28a7;
+        }
+
+        #scanQrCode:hover {
+            background-color: #361c74;
+            border-color: #361c74;
+        }
+
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .agent {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        #agentInfo {
+            margin-top: 20px;
+            margin-left: 1rem;
+        }
+
+        .agent-status {
+            padding: 1rem;
+            border-radius: .25rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .active-license {
+            background-color: green;
+        }
+
+        .inactive-license {
+            background-color: red;
+        }
+
+        .info-item {
+            margin-bottom: 8px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .agent-photo img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: block;
+            margin: 10px auto;
+        }
+
+        .example-id {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .example-id img {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            max-width: 80%;
+            height: auto;
+        }
+
+        .example-id p {
+            color: #666;
+            font-style: italic;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>NC DOI Bail Bondsman License Lookup</h1>
+
+        <label for="npnInput">Enter NPN:</label>
+        <input type="text" id="npnInput" placeholder="e.g. 123123123">
+        <div class="buttons-container">
+            <button id="getAgentInfoBtn" onclick="fetchAgentInfo()">Lookup by NPN</button>
+            <button id="scanQrCode" onclick="scanQrCode()">Scan QR Code</button>
+        </div>
+
+        <div class="agent">
+            <div id="agentInfo" style="display: none;">
+                <div id="agentStatus" class="agent-status"></div>
+                <div class="agent-photo">
+                    <img id="agentPhoto" src="" alt="Agent Photo">
+                </div>
+                <div id="agentInfoDisplay"></div>
+            </div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </div>
+        <div class="example-id">
+            <h3>Using the NC DOI Bail Bondsman Lookup Tool</h3>
+            <p>Press the <b>'Scan QR Code'</b> button and scan the QR code on the ID card.</p>
+            <p>Alternatively, you can enter the NPN manually and press <b>'Lookup by NPN'</b>.</p>
+            <img src="https://bondsman.blob.core.windows.net/example-id/Screenshot%202025-03-19%20100722.png"
+                alt="Example ID Card">
+            <p>Example of an ID card to scan</p>
+        </div>
+    </div>
+
+    <div id="video-container" class="modal">
+        <div class="modal-content" id="qr-video"></div>
+        <button class="close-button" id="close-camera">✕</button>
+    </div>
+
+    <script src="https://bondsman.blob.core.windows.net/example-id/jsQR.js"></script>
+    <script>
+        const baseUrl = 'https://our.ncdoi.com/bailbond';
+        const agentInfoDiv = document.getElementById('agentInfo');
+        const agentInfoDisplayDiv = document.getElementById('agentInfoDisplay');
+        const errorMessageDiv = document.getElementById('errorMessage');
+        const npnInput = document.getElementById('npnInput');
+        const agentStatusDiv = document.getElementById('agentStatus');
+        const agentPhotoImg = document.getElementById('agentPhoto');
+
+        async function fetchAgentInfo() {
+            const npn = npnInput.value.trim();
+            if (!npn) {
+                alert('Please enter an NPN.');
+                return;
+            }
+
+            resetDisplay();
+
+            try {
+                const response = await fetch(`${baseUrl}/agent_info/${npn}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API Error: ${response.status} - ${errorData.message || response.statusText}`);
+                }
+                const data = await response.json();
+                displayAgentInfo(data);
+            } catch (error) {
+                errorMessageDiv.textContent = "An error occurred while fetching agent information. Perhaps the NPN is invalid.";
+                errorMessageDiv.style.display = 'block';
+            }
+        }
+
+        function resetDisplay() {
+            agentInfoDiv.style.display = 'none';
+            errorMessageDiv.style.display = 'none';
+            agentInfoDisplayDiv.innerHTML = '';
+            agentStatusDiv.textContent = '';
+            agentPhotoImg.src = '';
+            agentStatusDiv.classList.remove('active-license', 'inactive-license');
+        }
+
+        async function scanQrCode() {
+            const videoContainer = document.getElementById('video-container');
+            const qrVideo = document.getElementById('qr-video');
+            const closeCameraButton = document.getElementById('close-camera');
+            let scanning = true;
+
+            qrVideo.innerHTML = '';
+            videoContainer.style.display = 'flex';
+
+            const video = document.createElement('video');
+            video.setAttribute('playsinline', ''); // iOS Safari
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+                video.srcObject = stream;
+                qrVideo.appendChild(video);
+                await video.play();
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                const interval = setInterval(() => {
+                    if (!scanning) return;
+
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+                    try {
+                        const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+
+                        if (code && code.data) {
+                            scanning = false;
+                            clearInterval(interval);
+                            stream.getTracks().forEach(track => track.stop());
+                            videoContainer.style.display = 'none';
+                            npnInput.value = code.data.split('x')[0];
+                            fetchAgentInfo();
+                        }
+                    } catch (qrError) {
+                        console.error('QR Code scanning error:', qrError);
+                    }
+                }, 100);
+
+
+                closeCameraButton.onclick = () => {
+                    scanning = false;
+                    clearInterval(interval);
+                    stream.getTracks().forEach(track => track.stop());
+                    videoContainer.style.display = 'none';
+                };
+
+            } catch (error) {
+                console.error('Camera access error:', error);
+                errorMessageDiv.textContent = 'Unable to access camera. Please ensure camera permissions are granted.';
+                errorMessageDiv.style.display = 'block';
+                videoContainer.style.display = 'none';
+            }
+        }
+
+
+        function displayAgentInfo(data) {
+            const licenseExpiration = new Date(data.licenseExpirationDate);
+            const licenseEffective = new Date(data.licenseEffectiveDate);
+            const today = new Date();
+            const isActive = licenseExpiration >= today && licenseEffective <= today;
+            agentStatusDiv.textContent = isActive ? 'ACTIVE LICENSE' : 'INACTIVE LICENSE';
+            agentStatusDiv.classList.add(isActive ? 'active-license' : 'inactive-license');
+
+            agentPhotoImg.src = data.photo_url;
+
+            agentInfoDisplayDiv.innerHTML = `
+                <div class="info-item"><span class="info-label">Name:</span> ${data.name}</div>
+                <div class="info-item"><span class="info-label">NPN:</span> ${data.npn}</div>
+                <div class="info-item"><span class="info-label">License Type:</span> ${data.licenseType}</div>
+                <div class="info-item"><span class="info-label">License Number:</span> ${data.licenseNumber}</div>
+                <div class="info-item"><span class="info-label">License Type Code:</span> ${data.licenseTypeCode}</div>
+                <div class="info-item"><span class="info-label">License Effective Date:</span> ${data.licenseEffectiveDate}</div>
+                <div class="info-item"><span class="info-label">License Expiration Date:</span> ${data.licenseExpirationDate}</div>
+                <div class="info-item"><span class="info-label">Residency:</span> ${data.residency}</div>
+                <div class="info-item"><span class="info-label">Designated Home State:</span> ${data.designatedHomeState}</div>
+                <div class="info-item"><span class="info-label">LOAs:</span> ${data.loas}</div>
+                <div class="info-item"><span class="info-label">FEIN:</span> ${data.fein}</div>
+                <div class="info-item"><span class="info-label">DBA Name:</span> ${data.dbaName}</div>
+                <div class="info-item"><span class="info-label">Business Phone:</span> ${data.businessPhone}</div>
+                <div class="info-item"><span class="info-label">Business Address:</span> ${data.businessAddress}</div>
+            `;
+            agentInfoDiv.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
