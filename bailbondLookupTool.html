@@ -209,7 +209,7 @@
         <form id="npnForm">
             <label for="npnInput">Enter NPN:</label>
             <input type="number" id="npnInput" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 123123123">
-            <input type="submit" style="display: none;">
+            <input type="submit" onsubmit="fetchAgentInfo()" style="display: none;">
         </form>
         <div class="buttons-container">
             <button id="getAgentInfoBtn" onclick="fetchAgentInfo()">Lookup by NPN</button>
