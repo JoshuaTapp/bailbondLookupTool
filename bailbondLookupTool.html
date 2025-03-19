@@ -265,6 +265,7 @@
         });
 
         async function fetchAgentInfo() {
+            npnInput.blur(); 
             const npn = npnInput.value.trim();
             if (!npn) {
                 alert('Please enter an NPN.');
