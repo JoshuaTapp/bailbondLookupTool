@@ -189,6 +189,7 @@ function createBasicAgentInfo(agent, photoUrl) {
 
 function createLicenseCards(licenses) {
     let licenseCards = '<div class="license-cards">';
+    licenses.sort((a, b) => a.licenseTypeCode.localeCompare(b.licenseTypeCode));
     licenses.forEach(license => {
         const isLicenseActive = license.licenseStatus === 'Active';
         const statusEmoji = isLicenseActive ? '✅' : '❌';
